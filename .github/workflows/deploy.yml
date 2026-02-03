@@ -26,6 +26,12 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: Authenticate to Google Cloud
+        run: |
+          echo '${{ secrets.GCP_SA_KEY }}' > ${HOME}/gcp-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
       - name: Build and Push Backend to GCR
         run: |
           cd backend
@@ -59,6 +65,12 @@ jobs:
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Authenticate to Google Cloud
+        run: |
+          echo '${{ secrets.GCP_SA_KEY }}' > ${HOME}/gcp-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Get Backend URL
         id: backend-url
