@@ -44,7 +44,7 @@ jobs:
             --platform managed \
             --region ${{ env.GCP_REGION }} \
             --allow-unauthenticated \
-            --set-env-vars "DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }},DATABASE_USER=${{ secrets.DB_USER }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_NAME=${{ secrets.DB_NAME }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},JWT_SECRET=${{ secrets.JWT_SECRET }},PORT=3002" \
+            --set-env-vars "DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }},DATABASE_USER=${{ secrets.DB_USER }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_NAME=${{ secrets.DB_NAME }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},JWT_SECRET=${{ secrets.JWT_SECRET }}" \
             --min-instances 1 \
             --max-instances 10 \
             --memory 512Mi \
