@@ -7,7 +7,6 @@ on:
     branches: [ main ]
 
 env:
-  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_REGION: us-central1
   BACKEND_SERVICE: taskflow-backend
   FRONTEND_SERVICE: taskflow-frontend
@@ -28,25 +27,25 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Configure Docker for GCP
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker gcr.io
 
       - name: Build Backend Docker image
         run: |
           cd backend
-          docker build -t gcr.io/$GCP_PROJECT_ID/$BACKEND_SERVICE:${{ github.sha }} .
-          docker tag gcr.io/$GCP_PROJECT_ID/$BACKEND_SERVICE:${{ github.sha }} gcr.io/$GCP_PROJECT_ID/$BACKEND_SERVICE:latest
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }} .
+          docker tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }} gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:latest
 
       - name: Push Backend Docker image
         run: |
-          docker push gcr.io/$GCP_PROJECT_ID/$BACKEND_SERVICE:${{ github.sha }}
-          docker push gcr.io/$GCP_PROJECT_ID/$BACKEND_SERVICE:latest
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }}
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:latest
 
       - name: Deploy Backend to Cloud Run
         run: |
-          gcloud run deploy $BACKEND_SERVICE \
-            --image gcr.io/$GCP_PROJECT_ID/$BACKEND_SERVICE:${{ github.sha }} \
+          gcloud run deploy ${{ env.BACKEND_SERVICE }} \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }} \
             --platform managed \
-            --region $GCP_REGION \
+            --region ${{ env.GCP_REGION }} \
             --allow-unauthenticated \
             --set-env-vars "DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }},DATABASE_USER=${{ secrets.DB_USER }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_NAME=${{ secrets.DB_NAME }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},JWT_SECRET=${{ secrets.JWT_SECRET }},PORT=3002" \
             --min-instances 1 \
@@ -72,7 +71,7 @@ jobs:
       - name: Get Backend URL
         id: backend-url
         run: |
-          BACKEND_URL=$(gcloud run services describe $BACKEND_SERVICE --region $GCP_REGION --format 'value(status.url)')
+          BACKEND_URL=$(gcloud run services describe ${{ env.BACKEND_SERVICE }} --region ${{ env.GCP_REGION }} --format 'value(status.url)')
           echo "BACKEND_URL=$BACKEND_URL" >> $GITHUB_OUTPUT
 
       - name: Create production .env
@@ -82,25 +81,25 @@ jobs:
           echo "VITE_SOCKET_URL=${{ steps.backend-url.outputs.BACKEND_URL }}" >> .env.production
 
       - name: Configure Docker for GCP
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker gcr.io
 
       - name: Build Frontend Docker image
         run: |
           cd frontend
-          docker build -t gcr.io/$GCP_PROJECT_ID/$FRONTEND_SERVICE:${{ github.sha }} .
-          docker tag gcr.io/$GCP_PROJECT_ID/$FRONTEND_SERVICE:${{ github.sha }} gcr.io/$GCP_PROJECT_ID/$FRONTEND_SERVICE:latest
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }} .
+          docker tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }} gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:latest
 
       - name: Push Frontend Docker image
         run: |
-          docker push gcr.io/$GCP_PROJECT_ID/$FRONTEND_SERVICE:${{ github.sha }}
-          docker push gcr.io/$GCP_PROJECT_ID/$FRONTEND_SERVICE:latest
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }}
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:latest
 
       - name: Deploy Frontend to Cloud Run
         run: |
-          gcloud run deploy $FRONTEND_SERVICE \
-            --image gcr.io/$GCP_PROJECT_ID/$FRONTEND_SERVICE:${{ github.sha }} \
+          gcloud run deploy ${{ env.FRONTEND_SERVICE }} \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }} \
             --platform managed \
-            --region $GCP_REGION \
+            --region ${{ env.GCP_REGION }} \
             --allow-unauthenticated \
             --min-instances 1 \
             --max-instances 10 \
