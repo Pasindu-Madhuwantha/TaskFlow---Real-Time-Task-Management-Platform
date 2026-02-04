@@ -19,13 +19,9 @@ import * as redisStore from 'cache-manager-redis-store';
     TypeOrmModule.forRoot({
       type: 'postgres',
       // For Cloud SQL Unix socket, DATABASE_HOST will be like /cloudsql/project:region:instance
+      // The pg driver automatically treats hosts starting with / as a unix socket directory
       ...(process.env.DATABASE_HOST?.startsWith('/cloudsql/')
-        ? {
-          host: process.env.DATABASE_HOST,
-          extra: {
-            socketPath: process.env.DATABASE_HOST,
-          },
-        }
+        ? { host: process.env.DATABASE_HOST }
         : {
           host: process.env.DATABASE_HOST || 'localhost',
           port: parseInt(process.env.DATABASE_PORT || '5432'),

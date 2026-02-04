@@ -47,7 +47,7 @@ jobs:
             --port 8080 \
             --timeout 300 \
             --add-cloudsql-instances ${{ secrets.CLOUD_SQL_CONNECTION }} \
-            --set-env-vars "DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }},DATABASE_USER=${{ secrets.DB_USER }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_NAME=${{ secrets.DB_NAME }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},JWT_SECRET=${{ secrets.JWT_SECRET }},NODE_ENV=production" \
+            --set-env-vars "DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }},DATABASE_USER=${{ secrets.DB_USER }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_NAME=${{ secrets.DB_NAME }},JWT_SECRET=${{ secrets.JWT_SECRET }},NODE_ENV=production" \
             --min-instances 0 \
             --max-instances 10 \
             --memory 1Gi \
