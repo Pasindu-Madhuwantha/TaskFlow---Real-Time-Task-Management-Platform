@@ -35,7 +35,7 @@ jobs:
       - name: Build and Push Backend to GCR
         run: |
           cd backend
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:latest --async
+          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:latest
 
       - name: Deploy Backend to Cloud Run
         run: |
@@ -47,12 +47,11 @@ jobs:
             --port 8080 \
             --timeout 300 \
             --add-cloudsql-instances ${{ secrets.CLOUD_SQL_CONNECTION }} \
-            --set-env-vars "DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }},DATABASE_USER=${{ secrets.DB_USER }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_NAME=${{ secrets.DB_NAME }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},JWT_SECRET=${{ secrets.JWT_SECRET }}" \
-            --min-instances 1 \
+            --set-env-vars "DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }},DATABASE_USER=${{ secrets.DB_USER }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_NAME=${{ secrets.DB_NAME }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},JWT_SECRET=${{ secrets.JWT_SECRET }},PORT=8080,NODE_ENV=production" \
+            --min-instances 0 \
             --max-instances 10 \
-            --memory 512Mi \
-            --cpu 1 \
-            --cpu-boost
+            --memory 1Gi \
+            --cpu 1
 
   build-and-deploy-frontend:
     name: Build and Deploy Frontend
@@ -90,7 +89,7 @@ jobs:
       - name: Build and Push Frontend to GCR
         run: |
           cd frontend
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:latest --async
+          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.FRONTEND_SERVICE }}:latest
 
       - name: Deploy Frontend to Cloud Run
         run: |
@@ -99,7 +98,8 @@ jobs:
             --platform managed \
             --region ${{ env.GCP_REGION }} \
             --allow-unauthenticated \
-            --min-instances 1 \
+            --port 80 \
+            --min-instances 0 \
             --max-instances 10 \
-            --memory 256Mi \
+            --memory 512Mi \
             --cpu 1
