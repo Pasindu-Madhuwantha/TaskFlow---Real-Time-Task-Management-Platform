@@ -33,9 +33,9 @@ jobs:
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Build and Push Backend to GCR
-        run: |
-          cd backend
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:latest
+  run: |
+    cd backend
+    gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.BACKEND_SERVICE }}:latest --timeout=20m
 
       - name: Deploy Backend to Cloud Run
         run: |
