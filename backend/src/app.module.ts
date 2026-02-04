@@ -16,25 +16,25 @@ import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      // For Cloud SQL Unix socket, DATABASE_HOST will be like /cloudsql/project:region:instance
-      // The pg driver automatically treats hosts starting with / as a unix socket directory
-      ...(process.env.DATABASE_HOST?.startsWith('/cloudsql/')
-        ? { host: process.env.DATABASE_HOST }
-        : {
-          host: process.env.DATABASE_HOST || 'localhost',
-          port: parseInt(process.env.DATABASE_PORT || '5432'),
-        }),
-      username: process.env.DATABASE_USER || 'postgres',
-      password: process.env.DATABASE_PASSWORD || 'postgres',
-      database: process.env.DATABASE_NAME || 'taskflow',
-      entities: [User, Task],
-      synchronize: process.env.NODE_ENV !== 'production', // Only in development
-      retryAttempts: 3,
-      retryDelay: 3000,
-      autoLoadEntities: true,
-    }),
+    // TypeOrmModule.forRoot({
+    //   type: 'postgres',
+    //   // For Cloud SQL Unix socket, DATABASE_HOST will be like /cloudsql/project:region:instance
+    //   // The pg driver automatically treats hosts starting with / as a unix socket directory
+    //   ...(process.env.DATABASE_HOST?.startsWith('/cloudsql/')
+    //     ? { host: process.env.DATABASE_HOST }
+    //     : {
+    //       host: process.env.DATABASE_HOST || 'localhost',
+    //       port: parseInt(process.env.DATABASE_PORT || '5432'),
+    //     }),
+    //   username: process.env.DATABASE_USER || 'postgres',
+    //   password: process.env.DATABASE_PASSWORD || 'postgres',
+    //   database: process.env.DATABASE_NAME || 'taskflow',
+    //   entities: [User, Task],
+    //   synchronize: process.env.NODE_ENV !== 'production', // Only in development
+    //   retryAttempts: 3,
+    //   retryDelay: 3000,
+    //   autoLoadEntities: true,
+    // }),
     // Only enable Redis cache if REDIS_HOST is configured
     ...(process.env.REDIS_HOST
       ? [CacheModule.register({
@@ -49,10 +49,10 @@ import * as redisStore from 'cache-manager-redis-store';
       ttl: 60000,
       limit: 10,
     }]),
-    AuthModule,
-    TasksModule,
-    UsersModule,
-    AnalyticsModule
+    // AuthModule,
+    // TasksModule,
+    // UsersModule,
+    // AnalyticsModule
   ],
   controllers: [AppController],
   providers: [
