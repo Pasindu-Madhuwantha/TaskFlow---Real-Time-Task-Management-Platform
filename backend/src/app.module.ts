@@ -18,13 +18,26 @@ import * as redisStore from 'cache-manager-redis-store';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DATABASE_HOST || 'localhost',
-      port: parseInt(process.env.DATABASE_PORT || '5432'),
+      // For Cloud SQL Unix socket, DATABASE_HOST will be like /cloudsql/project:region:instance
+      ...(process.env.DATABASE_HOST?.startsWith('/cloudsql/')
+        ? {
+          host: process.env.DATABASE_HOST,
+          extra: {
+            socketPath: process.env.DATABASE_HOST,
+          },
+        }
+        : {
+          host: process.env.DATABASE_HOST || 'localhost',
+          port: parseInt(process.env.DATABASE_PORT || '5432'),
+        }),
       username: process.env.DATABASE_USER || 'postgres',
       password: process.env.DATABASE_PASSWORD || 'postgres',
       database: process.env.DATABASE_NAME || 'taskflow',
       entities: [User, Task],
-      synchronize: true, // Only for development
+      synchronize: process.env.NODE_ENV !== 'production', // Only in development
+      retryAttempts: 3,
+      retryDelay: 3000,
+      autoLoadEntities: true,
     }),
     CacheModule.register({
       store: redisStore,
