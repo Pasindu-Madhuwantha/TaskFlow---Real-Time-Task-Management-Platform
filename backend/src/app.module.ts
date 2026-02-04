@@ -39,13 +39,16 @@ import * as redisStore from 'cache-manager-redis-store';
       retryDelay: 3000,
       autoLoadEntities: true,
     }),
-    CacheModule.register({
-      store: redisStore,
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      ttl: 600,
-      isGlobal: true,
-    }),
+    // Only enable Redis cache if REDIS_HOST is configured
+    ...(process.env.REDIS_HOST
+      ? [CacheModule.register({
+        store: redisStore,
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379'),
+        ttl: 600,
+        isGlobal: true,
+      })]
+      : [CacheModule.register({ isGlobal: true })]), // Use in-memory cache as fallback
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 10,
