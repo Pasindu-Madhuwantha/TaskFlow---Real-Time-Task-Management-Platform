@@ -45,11 +45,14 @@ jobs:
             --region ${{ env.GCP_REGION }} \
             --allow-unauthenticated \
             --port 8080 \
+            --timeout 300 \
+            --add-cloudsql-instances ${{ secrets.CLOUD_SQL_CONNECTION }} \
             --set-env-vars "DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }},DATABASE_USER=${{ secrets.DB_USER }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_NAME=${{ secrets.DB_NAME }},REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=${{ secrets.REDIS_PORT }},JWT_SECRET=${{ secrets.JWT_SECRET }}" \
             --min-instances 1 \
             --max-instances 10 \
             --memory 512Mi \
-            --cpu 1
+            --cpu 1 \
+            --cpu-boost
 
   build-and-deploy-frontend:
     name: Build and Deploy Frontend
